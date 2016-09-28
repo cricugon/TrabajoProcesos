@@ -1,7 +1,7 @@
 function Juego(){
 	this.nombre="Niveles";
 	this.niveles=[];
-	this.usuarios=[];
+	this.usuarios=[]; 
 	this.agregarNivel=function(nivel){
 		this.niveles.push(nivel);
 	}
