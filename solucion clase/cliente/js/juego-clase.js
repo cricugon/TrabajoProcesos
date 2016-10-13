@@ -1,23 +1,39 @@
 
 function crearNivel(){
+    
     var game = new Phaser.Game(800, 600, Phaser.AUTO, 'juegoId', { preload: preload, create: create, update: update });
 
     function preload() {
 
         game.load.image('sky', 'assets/sky.png');
         game.load.image('ground', 'assets/platform.png');
+        game.load.image('ground2', 'assets/platform2.png');
         game.load.image('star', 'assets/star.png');
         game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+        game.load.image('cielo', 'assets/heaven.png');
+
 
     }
 
     var player;
     var platforms;
     var cursors;
+    var cielo;
 
     var stars;
     var score = 0;
     var scoreText;
+
+    function crearNivel(nivel){
+        switch(nivel){
+        case '0': break;
+        case '1': break;
+        case '2': break;
+        default: noHayNiveles();
+        break;
+
+         }
+    }
 
     function create() {
 
@@ -29,9 +45,13 @@ function crearNivel(){
 
         //  The platforms group contains the ground and the 2 ledges we can jump on
         platforms = game.add.group();
+        cielo=game.add.group();
 
         //  We will enable physics for any object that is created in this group
         platforms.enableBody = true;
+        cielo.enableBody=true;
+
+        var fin=cielo.create(0,0,'cielo');
 
         // Here we create the ground.
         var ground = platforms.create(0, game.world.height - 64, 'ground');
@@ -45,6 +65,8 @@ function crearNivel(){
         //  Now let's create two ledges
         var ledge = platforms.create(400, 400, 'ground');
         ledge.body.immovable = true;
+
+        ledge=platforms.create(300,150, 'ground2');
 
         ledge = platforms.create(-150, 250, 'ground');
         ledge.body.immovable = true;
@@ -97,8 +119,10 @@ function crearNivel(){
         game.physics.arcade.collide(player, platforms);
         game.physics.arcade.collide(stars, platforms);
 
+
         //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
         game.physics.arcade.overlap(player, stars, collectStar, null, this);
+        game.physics.arcade.overlap(player, cielo, terminaNivel, null, this);
 
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
@@ -142,5 +166,8 @@ function crearNivel(){
         score += 10;
         scoreText.text = 'Score: ' + score;
 
+    }
+    function terminaNivel(player, final){
+        console.log("Nivel terminado");
     }
 }

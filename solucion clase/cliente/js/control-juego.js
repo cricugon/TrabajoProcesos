@@ -4,7 +4,12 @@ var url="http://127.0.0.1:1338/";
 //Funciones que modifican el index
 
 function inicio(){
+	if ($.cookie("nombre")!=undefined){
+		comprobarUsuario();
+	}
+	else{
 	mostrarCabecera();
+	}
 }
 
 function borrarControl(){
@@ -28,9 +33,27 @@ function botonNombre(){
 	});
 }
 
-function mostrarInfoJugador(datos){
+function mostrarInfoJugador(){
+	var nombre=$.cookie("nombre");
+	var id=$.cookie("id");
+	var nivel=$.cookie("nivel");
 	$('#datos').remove();
-	$('#control').append('<div id="datos">Nombre: '+datos.nombre+' Nivel: '+datos.nivel+' Id:'+datos.id+'</div>');
+	$('#control').append('<div id="datos">Nombre: '+nombre+' Nivel: '+nivel+' Id:'+id+'</div>');
+	siguienteNivel();
+}
+function siguienteNivel () {
+	$('#control').append('<button type="button" id="siguienteBtn">Siguiente Nivel</button>');
+	$('#siguienteBtn').on('click',function(){
+		$('#siguienteBtn').remove();
+		crearNivel($.cookie('nivel'));
+	});
+	// body...
+}
+function borrarCookies(){
+	$.removeCookie("nombre");
+	$.removeCookie("id");
+	$.removeCookie("nivel");
+
 }
 
 //Funciones de comunicación con el servidor
@@ -40,7 +63,24 @@ function crearUsuario(nombre){
 		nombre="jugador";
 	}
 	$.getJSON(url+'crearUsuario/'+nombre,function(datos){
-		mostrarInfoJugador(datos);
+		$.cookie('nombre',datos.nombre);
+		$.cookie('id',datos.id);
+		$.cookie('nivel',datos.nivel);
+		mostrarInfoJugador();
 	});
 	//mostrar datos
+}
+function comprobarUsuario(){
+	var id=$.cookie("id");
+	$.getJSON(url+'comprobarUsuario/'+id,function(datos){
+		if(datos.id<0){
+			borrarCookies();
+			mostrarCabecera();
+
+		}
+		else{
+			$.cookie("nivel",datos.nivel);
+			mostrarInfoJugador();
+		}
+	});
 }
